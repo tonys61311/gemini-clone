@@ -13,7 +13,7 @@ import {
     HarmBlockThreshold,
   } from "@google/generative-ai";
   
-  const apiKey = process.env.GOOGLE_API_KEY;
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
   if (!apiKey) {
     throw new Error("Missing API key: Please set GOOGLE_API_KEY in your environment variables.");
   }
