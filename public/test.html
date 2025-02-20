@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insert Barcode into Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.2.1/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bwip-js/2.1.8/bwip-js.min.js"></script>
+</head>
+<body>
+    <button onclick="generateExcel()">Generate Excel with Barcode</button>
+
+    <script>
+        async function generateExcel() {
+            const ExcelJS = window.ExcelJS;
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Sheet 1');
+
+            // 設置單元格值
+            worksheet.getCell('A1').value = '條碼圖片：';
+
+            // 生成條碼圖片
+            const barcodeCanvas = document.createElement('canvas');
+            bwipjs.toCanvas(barcodeCanvas, {
+                bcid: 'code128', // 條碼類型
+                text: '123456789012', // 條碼內容
+                scale: 3, // 縮放倍數
+                height: 10, // 條碼高度
+                includetext: true, // 是否包含文本
+                textxalign: 'center', // 文本對齊方式
+            });
+
+            // 將條碼圖片插入到 Excel
+            const imageId = workbook.addImage({
+                base64: barcodeCanvas.toDataURL('image/png'),
+                extension: 'png',
+            });
+            worksheet.addImage(imageId, 'B1:B3');
+
+            // 生成 Excel 文件
+            const buffer = await workbook.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            // 下載 Excel 文件
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'output_with_barcode.xlsx';
+            link.click();
+        }
+    </script>
+</body>
+</html>
